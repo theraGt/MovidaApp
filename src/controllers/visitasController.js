@@ -14,7 +14,7 @@ export const getVisitas = async (req, res) => {
         client = await pool.connect();
 
         const result = await client.query(querys.visitas_query);
-        console.log(visitas_ok);
+        console.log("visitas ok");
 
         res.json(result.rows);
 

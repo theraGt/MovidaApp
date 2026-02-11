@@ -12,7 +12,7 @@ export const getActivities = async (req, res) => {
         const pool = await getConnection();
         client = await pool.connect();
 
-        const result = await client.query(querys.activities_query);
+        const result = await client.query(querys.activity_query);
 
         res.json(result.rows);
 
