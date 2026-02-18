@@ -37,7 +37,7 @@ export default {
         carta_pastoral AS "cartaPastoral", 
         foto, 
         datos_completos AS "datosCompletos" 
-        FROM voluntarios`,
+        FROM movida.voluntarios`,
 
     // Visitas
     visitas_query: `SELECT 

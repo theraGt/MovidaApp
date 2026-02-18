@@ -4,6 +4,7 @@ import voluntariosRoutes from './routes/voluntariosRoutes.js'
 import accesoRoutes from './routes/accesosRoutes.js'
 import activitiesRoutes from './routes/activitiesRoutes.js'
 import visitasRoutes from './routes/visitasRoutes.js'
+import llmRoutes from './routes/llmRoutes.js'
 import cors from 'cors'
 import bodyParser from 'body-parser';
 
@@ -26,5 +27,6 @@ app.use(voluntariosRoutes)
 app.use(accesoRoutes)
 app.use(activitiesRoutes)
 app.use(visitasRoutes)
+app.use(llmRoutes)
 
 export default app
