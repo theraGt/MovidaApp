@@ -11,7 +11,7 @@ import bodyParser from 'body-parser';
 const app = express()
 const options = {
     origin: "*",
-    methods: ["OPTIONS, POST, GET, DELETE, PUT"],
+    methods: ["OPTIONS", "POST", "GET", "DELETE", "PUT"],
     allowedHeaders: "Content-Type",
     optionsSuccessStatus: 204
 }
