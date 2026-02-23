@@ -23,7 +23,7 @@ var LLMService = /*#__PURE__*/function () {
       baseURL: "https://openrouter.ai/api/v1",
       apiKey: _config["default"].openrouterApiKey,
       defaultHeaders: {
-        "HTTP-Referer": _config["default"].appUrl || "https://thera-ia-api-movida-app.9zx1zd.easypanel.host",
+        "HTTP-Referer": _config["default"].appUrl || "http://localhost:3000",
         "X-Title": "Movida App"
       }
     });

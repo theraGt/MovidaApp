@@ -16,7 +16,7 @@ var _bodyParser = _interopRequireDefault(require("body-parser"));
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
 var app = (0, _express["default"])();
 var options = {
-  origin: "https://thera-ia-movida-app.9zx1zd.easypanel.host",
+  origin: "*",
   methods: ["OPTIONS", "POST", "GET", "DELETE", "PUT"],
   allowedHeaders: "Content-Type",
   optionsSuccessStatus: 204
