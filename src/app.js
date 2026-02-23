@@ -10,7 +10,7 @@ import bodyParser from 'body-parser';
 
 const app = express()
 const options = {
-    origin: "*",
+    origin: "https://thera-ia-movida-app.9zx1zd.easypanel.host",
     methods: ["OPTIONS", "POST", "GET", "DELETE", "PUT"],
     allowedHeaders: "Content-Type",
     optionsSuccessStatus: 204
