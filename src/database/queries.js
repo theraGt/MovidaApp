@@ -87,5 +87,46 @@ export default {
 
     create_activity_query: "INSERT INTO actividades (fecha, hora, actividad, tipo, estado, pais, comentario) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id_calendario",
     update_activity_query: "UPDATE actividades SET fecha=$1, hora=$2, actividad=$3, tipo=$4, estado=$5, pais=$6, comentario=$7 WHERE id_calendario=$8",
-    delete_activity_query: "DELETE FROM actividades WHERE id_calendario=$1"
+    delete_activity_query: "DELETE FROM actividades WHERE id_calendario=$1",
+
+    // Copiloto Emocional - Usuarios
+    copiloto_register: "INSERT INTO movida.copiloto_usuarios (email, password_hash, nombre) VALUES ($1, $2, $3) RETURNING id, email, nombre, activo, created_at",
+    copiloto_login: "SELECT id, email, nombre, activo, created_at FROM movida.copiloto_usuarios WHERE email = $1 AND password_hash = $2 AND activo = true",
+    copiloto_check_email: "SELECT id FROM movida.copiloto_usuarios WHERE email = $1",
+
+    // Copiloto Emocional - Mensajes
+    copiloto_save_message: "INSERT INTO movida.copiloto_messages (user_id, area, session_id, role, content, categoria, intensidad) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id",
+    copiloto_get_history: `SELECT id, role, content, categoria, intensidad, created_at 
+        FROM movida.copiloto_messages 
+        WHERE user_id = $1 AND area = $2 AND session_id = $3
+        ORDER BY created_at ASC 
+        LIMIT $4`,
+    copiloto_get_recent_messages: `SELECT id, role, content, categoria, intensidad, created_at 
+        FROM movida.copiloto_messages 
+        WHERE user_id = $1 AND area = $2
+        ORDER BY created_at DESC 
+        LIMIT $4`,
+    copiloto_count_messages: "SELECT COUNT(*) as count FROM movida.copiloto_messages WHERE user_id = $1 AND area = $2",
+
+    // Copiloto Emocional - Memoria
+    copiloto_save_memory: "INSERT INTO movida.copiloto_memory (user_id, area, summary) VALUES ($1, $2, $3) RETURNING id",
+    copiloto_get_memory: "SELECT id, summary, created_at FROM movida.copiloto_memory WHERE user_id = $1 AND area = $2 ORDER BY created_at DESC LIMIT 10",
+
+    // Copiloto Emocional - Acciones
+    copiloto_save_action: "INSERT INTO movida.copiloto_actions (user_id, area, title, description, urgency) VALUES ($1, $2, $3, $4, $5) RETURNING id",
+    copiloto_get_actions: "SELECT id, title, description, urgency, completed, created_at FROM movida.copiloto_actions WHERE user_id = $1 AND area = $2 ORDER BY created_at DESC",
+    copiloto_get_all_actions: "SELECT ca.id, ca.title, ca.description, ca.urgency, ca.completed, ca.created_at, ca.area FROM movida.copiloto_actions ca WHERE ca.user_id = $1 ORDER BY ca.completed ASC, ca.created_at DESC",
+    copiloto_toggle_action: "UPDATE movida.copiloto_actions SET completed = NOT completed WHERE id = $1 AND user_id = $2 RETURNING id, completed",
+    copiloto_update_action: "UPDATE movida.copiloto_actions SET title = COALESCE($3, title), description = COALESCE($4, description), urgency = COALESCE($5, urgency), area = COALESCE($6, area) WHERE id = $1 AND user_id = $2 RETURNING id, title, description, urgency, area",
+    copiloto_delete_action: "DELETE FROM movida.copiloto_actions WHERE id = $1 AND user_id = $2",
+
+    // Copiloto Emocional - Conversaciones
+    copiloto_get_conversations_by_area: `SELECT id, role, content, categoria, intensidad, created_at 
+        FROM movida.copiloto_messages 
+        WHERE user_id = $1 AND area = $2
+        ORDER BY created_at ASC`,
+    copiloto_get_all_conversations: `SELECT id, role, content, categoria, intensidad, area, created_at 
+        FROM movida.copiloto_messages 
+        WHERE user_id = $1
+        ORDER BY created_at DESC`
 }

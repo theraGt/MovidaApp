@@ -25,14 +25,29 @@ class LLMService {
     
     const providers = [
       {
+        name: 'groq-llama-3.3',
+        client: this.groq,
+        model: "llama-3.3-70b-versatile"
+      },
+      {
+        name: 'groq-llama-3.1',
+        client: this.groq,
+        model: "llama-3.1-8b-instant"
+      },
+      {
+        name: 'groq-gpt-oss-20b',
+        client: this.groq,
+        model: "openai/gpt-oss-20b"
+      },
+      {
+        name: 'groq-qwen3',
+        client: this.groq,
+        model: "qwen/qwen3-32b"
+      },
+      {
         name: 'openrouter',
         client: this.openrouter,
         model: "meta-llama/llama-3.2-3b-instruct:free"
-      },
-      {
-        name: 'groq',
-        client: this.groq,
-        model: "llama-3.1-8b-instant"
       }
     ];
 
@@ -45,7 +60,7 @@ class LLMService {
         const completion = await provider.client.chat.completions.create({
           model: provider.model,
           messages: messages,
-          temperature: temperature,
+          temperature: 0.8,
           max_tokens: max_tokens
         });
 
@@ -63,11 +78,12 @@ class LLMService {
         console.error(`Error con ${provider.name}:`, error.message);
         lastError = error;
         
-        // Si es rate limit (429), continuar con el siguiente proveedor
-        if (error.status === 429 || 
+        // Si es rate limit (429) o error de proveedor (402), continuar con el siguiente proveedor
+        if (error.status === 429 || error.status === 402 ||
             (error.message && error.message.includes('rate-limited')) ||
-            (error.message && error.message.includes('rate limit'))) {
-          console.log(`${provider.name} tiene rate limit, probando siguiente proveedor...`);
+            (error.message && error.message.includes('rate limit')) ||
+            (error.message && error.message.includes('Provider returned error'))) {
+          console.log(`${provider.name} tiene límite o error, probando siguiente proveedor...`);
           continue;
         }
         
@@ -88,6 +104,82 @@ class LLMService {
       error: 'Todos los proveedores de IA están temporalmente no disponibles',
       details: lastError?.message || 'Rate limit en todos los proveedores',
       code: 429
+    };
+  }
+
+  async generateEnsemble(messages, options = {}) {
+    const { max_tokens = 1500 } = options;
+    
+    const groqModels = [
+      {
+        name: 'Llama-3.3-70B',
+        client: this.groq,
+        model: "llama-3.3-70b-versatile"
+      },
+      {
+        name: 'Llama-3.1-8B',
+        client: this.groq,
+        model: "llama-3.1-8b-instant"
+      },
+      {
+        name: 'GPT-OSS-20B',
+        client: this.groq,
+        model: "openai/gpt-oss-20b"
+      },
+      {
+        name: 'Qwen3-32B',
+        client: this.groq,
+        model: "qwen/qwen3-32b"
+      }
+    ];
+
+    console.log('🚀 Ejecutando ensemble con 4 modelos en paralelo...');
+    
+    const promises = groqModels.map(async (modelConfig) => {
+      try {
+        const completion = await modelConfig.client.chat.completions.create({
+          model: modelConfig.model,
+          messages: messages,
+          temperature: 0.8,
+          max_tokens: max_tokens
+        });
+        
+        console.log(`✅ ${modelConfig.name} respondió`);
+        
+        return {
+          success: true,
+          name: modelConfig.name,
+          content: completion.choices[0].message.content,
+          model: completion.model
+        };
+      } catch (error) {
+        console.error(`❌ Error con ${modelConfig.name}:`, error.message);
+        return {
+          success: false,
+          name: modelConfig.name,
+          error: error.message
+        };
+      }
+    });
+
+    const results = await Promise.all(promises);
+    
+    const successfulResponses = results.filter(r => r.success);
+    
+    if (successfulResponses.length === 0) {
+      return {
+        success: false,
+        error: 'Ningún modelo pudo generar una respuesta',
+        results
+      };
+    }
+
+    console.log(`📊 ${successfulResponses.length}/4 modelos respondieron correctamente`);
+
+    return {
+      success: true,
+      results: successfulResponses,
+      count: successfulResponses.length
     };
   }
 }
