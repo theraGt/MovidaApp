@@ -1,15 +1,13 @@
-FROM node:18
+FROM node:18-alpine
 
-WORKDIR /ApiMovida
+WORKDIR /app
 
-# Copia los archivos de configuración de dependencias
-COPY package.json package-lock.json ./
+COPY package*.json ./
 
-# Instala las dependencias
-RUN npm install
+RUN npm install --legacy-peer-deps
 
-COPY . .
+COPY build/ ./build/
 
-EXPOSE 3030
+EXPOSE 5050
 
-CMD [ "npm","start" ]
+CMD ["node", "build/index.js"]
