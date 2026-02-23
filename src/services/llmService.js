@@ -7,7 +7,7 @@ class LLMService {
       baseURL: "https://openrouter.ai/api/v1",
       apiKey: config.openrouterApiKey,
       defaultHeaders: {
-        "HTTP-Referer": config.appUrl || "http://localhost:3000",
+        "HTTP-Referer": config.appUrl || "https://thera-ia-movida-app.9zx1zd.easypanel.host/home",
         "X-Title": "Movida App",
       }
     });
